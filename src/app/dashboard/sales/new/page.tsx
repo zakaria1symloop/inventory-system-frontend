@@ -105,6 +105,9 @@ export default function NewSalePage() {
   const [productHighlightIndex, setProductHighlightIndex] = useState(-1);
   const productListRef = useRef<HTMLDivElement>(null);
 
+  // Search mode toggle (barcode or name) - saved to localStorage
+  const [searchMode, setSearchMode] = useState<'barcode' | 'name'>('barcode');
+
   // Quick product entry modal
   const [quickEntryModal, setQuickEntryModal] = useState<{
     show: boolean;
@@ -122,7 +125,31 @@ export default function NewSalePage() {
 
   useEffect(() => {
     fetchData();
+    // Load search mode from localStorage
+    const savedSearchMode = localStorage.getItem('productSearchMode');
+    if (savedSearchMode === 'barcode' || savedSearchMode === 'name') {
+      setSearchMode(savedSearchMode);
+    }
   }, []);
+
+  // Save search mode to localStorage when changed
+  const toggleSearchMode = () => {
+    const newMode = searchMode === 'barcode' ? 'name' : 'barcode';
+    setSearchMode(newMode);
+    localStorage.setItem('productSearchMode', newMode);
+    // Clear search inputs when switching
+    setBarcodeInput('');
+    setSearchTerm('');
+    setShowProductSearch(false);
+    // Focus the search input
+    setTimeout(() => {
+      if (newMode === 'barcode') {
+        barcodeInputRef.current?.focus();
+      } else {
+        productSearchRef.current?.focus();
+      }
+    }, 50);
+  };
 
   // Global keyboard shortcuts
   useEffect(() => {
@@ -823,115 +850,141 @@ export default function NewSalePage() {
 
             {/* Product Search */}
             <div className="card">
-              <h2 className="text-lg font-semibold mb-4">إضافة المنتجات</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">البحث بالباركود</label>
-                  <input
-                    ref={barcodeInputRef}
-                    type="text"
-                    value={barcodeInput}
-                    onChange={(e) => setBarcodeInput(e.target.value)}
-                    onKeyDown={handleBarcodeSearch}
-                    className="input w-full"
-                    placeholder="امسح الباركود واضغط Enter..."
-                  />
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">إضافة المنتجات</h2>
+                {/* Search Mode Toggle */}
+                <div className="flex items-center gap-3">
+                  <span className={`text-sm ${searchMode === 'barcode' ? 'text-blue-600 font-medium' : 'text-gray-400'}`}>باركود</span>
+                  <button
+                    type="button"
+                    onClick={toggleSearchMode}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                      searchMode === 'name' ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        searchMode === 'name' ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                  <span className={`text-sm ${searchMode === 'name' ? 'text-blue-600 font-medium' : 'text-gray-400'}`}>اسم</span>
                 </div>
-                <div className="relative">
-                  <label className="block text-sm font-medium mb-1">البحث بالاسم</label>
-                  <input
-                    ref={productSearchRef}
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => {
-                      setSearchTerm(e.target.value);
-                      setShowProductSearch(true);
-                      setProductHighlightIndex(-1);
-                    }}
-                    onFocus={() => {
-                      setShowProductSearch(true);
-                      setProductHighlightIndex(-1);
-                    }}
-                    onKeyDown={(e) => {
-                      const availableProducts = filteredProducts.slice(0, 10).filter(p => getProductStock(p) >= 1);
-                      const maxIndex = availableProducts.length - 1;
+              </div>
 
-                      if (e.key === 'Escape') {
-                        setShowProductSearch(false);
-                        setProductHighlightIndex(-1);
-                      } else if (e.key === 'ArrowDown') {
-                        e.preventDefault();
+              <div className="mb-4">
+                {searchMode === 'barcode' ? (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">البحث بالباركود</label>
+                    <input
+                      ref={barcodeInputRef}
+                      type="text"
+                      value={barcodeInput}
+                      onChange={(e) => setBarcodeInput(e.target.value)}
+                      onKeyDown={handleBarcodeSearch}
+                      className="input w-full"
+                      placeholder="امسح الباركود واضغط Enter..."
+                      autoFocus
+                    />
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <label className="block text-sm font-medium mb-1">البحث بالاسم</label>
+                    <input
+                      ref={productSearchRef}
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
                         setShowProductSearch(true);
-                        const newIndex = Math.min(productHighlightIndex + 1, maxIndex);
-                        setProductHighlightIndex(newIndex);
-                        // Scroll to highlighted item
-                        setTimeout(() => {
-                          const item = productListRef.current?.querySelector(`[data-index="${newIndex}"]`);
-                          item?.scrollIntoView({ block: 'nearest' });
-                        }, 0);
-                      } else if (e.key === 'ArrowUp') {
-                        e.preventDefault();
-                        const newIndex = Math.max(productHighlightIndex - 1, 0);
-                        setProductHighlightIndex(newIndex);
-                        // Scroll to highlighted item
-                        setTimeout(() => {
-                          const item = productListRef.current?.querySelector(`[data-index="${newIndex}"]`);
-                          item?.scrollIntoView({ block: 'nearest' });
-                        }, 0);
-                      } else if (e.key === 'Enter') {
-                        e.preventDefault();
-                        if (productHighlightIndex >= 0 && availableProducts[productHighlightIndex]) {
-                          openQuickEntryModal(availableProducts[productHighlightIndex]);
+                        setProductHighlightIndex(-1);
+                      }}
+                      onFocus={() => {
+                        setShowProductSearch(true);
+                        setProductHighlightIndex(-1);
+                      }}
+                      onKeyDown={(e) => {
+                        const availableProducts = filteredProducts.slice(0, 10).filter(p => getProductStock(p) >= 1);
+                        const maxIndex = availableProducts.length - 1;
+
+                        if (e.key === 'Escape') {
+                          setShowProductSearch(false);
                           setProductHighlightIndex(-1);
-                        } else if (availableProducts.length === 1) {
-                          openQuickEntryModal(availableProducts[0]);
-                          setProductHighlightIndex(-1);
+                        } else if (e.key === 'ArrowDown') {
+                          e.preventDefault();
+                          setShowProductSearch(true);
+                          const newIndex = Math.min(productHighlightIndex + 1, maxIndex);
+                          setProductHighlightIndex(newIndex);
+                          // Scroll to highlighted item
+                          setTimeout(() => {
+                            const item = productListRef.current?.querySelector(`[data-index="${newIndex}"]`);
+                            item?.scrollIntoView({ block: 'nearest' });
+                          }, 0);
+                        } else if (e.key === 'ArrowUp') {
+                          e.preventDefault();
+                          const newIndex = Math.max(productHighlightIndex - 1, 0);
+                          setProductHighlightIndex(newIndex);
+                          // Scroll to highlighted item
+                          setTimeout(() => {
+                            const item = productListRef.current?.querySelector(`[data-index="${newIndex}"]`);
+                            item?.scrollIntoView({ block: 'nearest' });
+                          }, 0);
+                        } else if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if (productHighlightIndex >= 0 && availableProducts[productHighlightIndex]) {
+                            openQuickEntryModal(availableProducts[productHighlightIndex]);
+                            setProductHighlightIndex(-1);
+                          } else if (availableProducts.length === 1) {
+                            openQuickEntryModal(availableProducts[0]);
+                            setProductHighlightIndex(-1);
+                          }
                         }
-                      }
-                    }}
-                    className="input w-full"
-                    placeholder="ابحث عن منتج..."
-                  />
-                  {showProductSearch && searchTerm && (
-                    <div ref={productListRef} className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                      {filteredProducts.length === 0 ? (
-                        <div className="p-3 text-gray-500 text-center">لا توجد نتائج</div>
-                      ) : (
-                        (() => {
-                          let availableIndex = -1;
-                          return filteredProducts.slice(0, 10).map((product) => {
-                            const stock = getProductStock(product);
-                            const isOutOfStock = stock < 1;
-                            if (!isOutOfStock) availableIndex++;
-                            const currentAvailableIndex = availableIndex;
-                            const isHighlighted = !isOutOfStock && productHighlightIndex === currentAvailableIndex;
-                            return (
-                              <button
-                                key={product.id}
-                                type="button"
-                                data-index={isOutOfStock ? undefined : currentAvailableIndex}
-                                onClick={() => openQuickEntryModal(product)}
-                                className={`w-full p-3 text-right border-b last:border-b-0 ${isOutOfStock ? 'bg-red-50 opacity-60' : isHighlighted ? 'bg-blue-100' : 'hover:bg-gray-50'}`}
-                                disabled={isOutOfStock}
-                              >
-                                <div className="flex justify-between items-center">
-                                  <span className="font-medium">{product.name}</span>
-                                  <span className={`text-sm font-bold ${isOutOfStock ? 'text-red-600' : 'text-green-600'}`}>
-                                    {stock > 0 ? `متوفر: ${stock}` : 'غير متوفر'}
-                                  </span>
-                                </div>
-                                <div className="text-sm text-gray-500 flex justify-between">
-                                  <span>{product.barcode}</span>
-                                  <span>{formatCurrency(Number(product.retail_price) || 0)} / قطعة</span>
-                                </div>
-                              </button>
-                            );
-                          });
-                        })()
-                      )}
-                    </div>
-                  )}
-                </div>
+                      }}
+                      className="input w-full"
+                      placeholder="ابحث عن منتج..."
+                      autoFocus
+                    />
+                    {showProductSearch && searchTerm && (
+                      <div ref={productListRef} className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                        {filteredProducts.length === 0 ? (
+                          <div className="p-3 text-gray-500 text-center">لا توجد نتائج</div>
+                        ) : (
+                          (() => {
+                            let availableIndex = -1;
+                            return filteredProducts.slice(0, 10).map((product) => {
+                              const stock = getProductStock(product);
+                              const isOutOfStock = stock < 1;
+                              if (!isOutOfStock) availableIndex++;
+                              const currentAvailableIndex = availableIndex;
+                              const isHighlighted = !isOutOfStock && productHighlightIndex === currentAvailableIndex;
+                              return (
+                                <button
+                                  key={product.id}
+                                  type="button"
+                                  data-index={isOutOfStock ? undefined : currentAvailableIndex}
+                                  onClick={() => openQuickEntryModal(product)}
+                                  className={`w-full p-3 text-right border-b last:border-b-0 ${isOutOfStock ? 'bg-red-50 opacity-60' : isHighlighted ? 'bg-blue-100' : 'hover:bg-gray-50'}`}
+                                  disabled={isOutOfStock}
+                                >
+                                  <div className="flex justify-between items-center">
+                                    <span className="font-medium">{product.name}</span>
+                                    <span className={`text-sm font-bold ${isOutOfStock ? 'text-red-600' : 'text-green-600'}`}>
+                                      {stock > 0 ? `متوفر: ${stock}` : 'غير متوفر'}
+                                    </span>
+                                  </div>
+                                  <div className="text-sm text-gray-500 flex justify-between">
+                                    <span>{product.barcode}</span>
+                                    <span>{formatCurrency(Number(product.retail_price) || 0)} / قطعة</span>
+                                  </div>
+                                </button>
+                              );
+                            });
+                          })()
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Items Table - New Format */}

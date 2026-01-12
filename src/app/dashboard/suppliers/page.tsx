@@ -220,11 +220,12 @@ export default function SuppliersPage() {
   };
 
   const formatCurrency = (value: number) => {
+    const safeValue = Number(value) || 0;
     return new Intl.NumberFormat('ar-DZ', {
       style: 'currency',
       currency: 'DZD',
       minimumFractionDigits: 0,
-    }).format(value);
+    }).format(safeValue);
   };
 
   const formatDate = (date: string) => {
@@ -235,8 +236,11 @@ export default function SuppliersPage() {
   // Statistics
   const totalSuppliers = suppliers.length;
   const activeSuppliers = suppliers.filter(s => s.is_active).length;
-  const suppliersWithDebt = suppliers.filter(s => (s.balance || 0) > 0).length;
-  const totalDebt = suppliers.reduce((sum, s) => sum + ((s.balance || 0) > 0 ? (s.balance || 0) : 0), 0);
+  const suppliersWithDebt = suppliers.filter(s => (Number(s.balance) || 0) > 0).length;
+  const totalDebt = suppliers.reduce((sum, s) => {
+    const balance = Number(s.balance) || 0;
+    return sum + (balance > 0 ? balance : 0);
+  }, 0);
 
   // Filtered suppliers
   const filteredSuppliers = suppliers.filter(supplier => {
