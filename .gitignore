@@ -3,7 +3,6 @@
 .pnp.js
 /coverage
 /.next/
-/out/
 /build
 .DS_Store
 *.pem
