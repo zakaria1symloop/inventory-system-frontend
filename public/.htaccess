@@ -4,9 +4,11 @@ RewriteEngine On
 # Set the base
 RewriteBase /
 
-# If the request is for a real file or directory, serve it directly
+# Remove trailing slash and redirect to .html file
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} (.+)/$
+RewriteRule ^ %1.html [L]
 
 # Handle dashboard routes - serve the appropriate HTML file
 # For /dashboard/purchases/123 -> serve /dashboard/purchases/_.html
@@ -16,7 +18,7 @@ RewriteRule ^dashboard/orders/[0-9]+$ /dashboard/orders/_.html [L]
 RewriteRule ^dashboard/deliveries/[0-9]+$ /dashboard/deliveries/_.html [L]
 RewriteRule ^dashboard/adjustments/[0-9]+$ /dashboard/adjustments/_.html [L]
 
-# Handle other non-existent files - try to add .html extension
+# Handle requests without extension - try to add .html
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}.html -f
