@@ -1,5 +1,7 @@
 import AdjustmentDetail from './AdjustmentDetail';
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return [{ id: '_' }];
 }

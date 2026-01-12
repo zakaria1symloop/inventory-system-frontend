@@ -1,5 +1,7 @@
 import PurchaseDetail from './PurchaseDetail';
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return [{ id: '_' }];
 }

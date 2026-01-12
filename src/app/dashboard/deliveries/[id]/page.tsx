@@ -1,5 +1,7 @@
 import DeliveryDetail from './DeliveryDetail';
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return [{ id: '_' }];
 }
