@@ -792,10 +792,11 @@ export default function NewPurchasePage() {
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                       searchMode === 'name' ? 'bg-blue-600' : 'bg-gray-300'
                     }`}
+                    style={{ direction: 'ltr' }}
                   >
                     <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        searchMode === 'name' ? 'translate-x-6' : 'translate-x-1'
+                      className={`inline-block h-4 w-4 rounded-full bg-white transition-all duration-200 ${
+                        searchMode === 'name' ? 'mr-1 ml-auto' : 'ml-1 mr-auto'
                       }`}
                     />
                   </button>
