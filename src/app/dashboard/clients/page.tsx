@@ -40,6 +40,11 @@ interface Client {
   combined_debt?: number;
   credit_limit?: number;
   is_active: boolean;
+  rc?: string;
+  nif?: string;
+  ai?: string;
+  nis?: string;
+  rib?: string;
   created_at?: string;
   orders_count?: number;
   sales_count?: number;
@@ -92,6 +97,11 @@ export default function ClientsPage() {
     gps_lng: '',
     credit_limit: '',
     is_active: true,
+    rc: '',
+    nif: '',
+    ai: '',
+    nis: '',
+    rib: '',
   });
 
   useEffect(() => {
@@ -155,6 +165,11 @@ export default function ClientsPage() {
       gps_lng: '',
       credit_limit: '',
       is_active: true,
+      rc: '',
+      nif: '',
+      ai: '',
+      nis: '',
+      rib: '',
     });
     setIsModalOpen(true);
   };
@@ -170,6 +185,11 @@ export default function ClientsPage() {
       gps_lng: client.gps_lng?.toString() || '',
       credit_limit: client.credit_limit?.toString() || '',
       is_active: client.is_active,
+      rc: client.rc || '',
+      nif: client.nif || '',
+      ai: client.ai || '',
+      nis: client.nis || '',
+      rib: client.rib || '',
     });
     setIsModalOpen(true);
   };
@@ -668,6 +688,82 @@ export default function ClientsPage() {
                   />
                 </div>
                 <p className="text-xs text-gray-500 mt-1">اتركه فارغاً لعدم تحديد حد</p>
+              </div>
+
+              {/* Legal Information */}
+              <div className="border-t pt-4 mt-4">
+                <h4 className="font-medium text-gray-700 mb-3">المعلومات القانونية</h4>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        RC (السجل التجاري)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.rc}
+                        onChange={(e) => setFormData(p => ({ ...p, rc: e.target.value }))}
+                        className="input w-full"
+                        dir="ltr"
+                        placeholder="00/00-0000000B00"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        NIF (الرقم الجبائي)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.nif}
+                        onChange={(e) => setFormData(p => ({ ...p, nif: e.target.value }))}
+                        className="input w-full"
+                        dir="ltr"
+                        placeholder="000000000000000"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        AI (رقم المادة)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.ai}
+                        onChange={(e) => setFormData(p => ({ ...p, ai: e.target.value }))}
+                        className="input w-full"
+                        dir="ltr"
+                        placeholder="00000000000"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        NIS (رقم الإحصاء)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.nis}
+                        onChange={(e) => setFormData(p => ({ ...p, nis: e.target.value }))}
+                        className="input w-full"
+                        dir="ltr"
+                        placeholder="000000000000000"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      RIB (رقم الحساب البنكي)
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.rib}
+                      onChange={(e) => setFormData(p => ({ ...p, rib: e.target.value }))}
+                      className="input w-full"
+                      dir="ltr"
+                      placeholder="00000 00000 00000000000 00"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="p-3 bg-gray-50 rounded-lg">
