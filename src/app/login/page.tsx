@@ -142,7 +142,7 @@ export default function LoginPage() {
             <p className="text-center text-sm text-gray-500 mb-4">تحميل التطبيقات</p>
             <div className="flex gap-3">
               <a
-                href="https://rafik-biskra.symloop.com/seller-app.apk"
+                href="https://rafik-biskra.symloop.com/seller.apk"
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
                 download
               >
@@ -152,7 +152,7 @@ export default function LoginPage() {
                 <span className="text-sm font-medium">تطبيق البائع</span>
               </a>
               <a
-                href="https://rafik-biskra.symloop.com/livreur-app.apk"
+                href="https://rafik-biskra.symloop.com/livreur.apk"
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
                 download
               >
