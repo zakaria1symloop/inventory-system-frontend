@@ -1,9 +1,8 @@
 import OrderDetail from './OrderDetail';
 
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return [{ id: '_' }];
+export async function generateStaticParams() {
+  // Generate a placeholder route for static export
+  return [{ id: '1' }];
 }
 
 export default function Page() {

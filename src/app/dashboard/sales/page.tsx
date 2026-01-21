@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { salesApi } from '@/lib/api';
 import toast from 'react-hot-toast';
-import { DocumentTextIcon, TruckIcon, BanknotesIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { DocumentTextIcon, TruckIcon, BanknotesIcon, ArrowDownTrayIcon, PencilIcon } from '@heroicons/react/24/outline';
 
 interface Sale {
   id: number;
@@ -234,6 +234,9 @@ export default function SalesPage() {
                     <td><span className={`badge ${paymentBadge.class}`}>{paymentBadge.text}</span></td>
                     <td>
                       <div className="flex gap-2">
+                        <Link href={`/dashboard/sales/edit/${sale.id}`} className="text-amber-600 hover:text-amber-800" title="تعديل">
+                          <PencilIcon className="w-5 h-5" />
+                        </Link>
                         <Link href={`/dashboard/sales/${sale.id}`} className="text-blue-600 hover:text-blue-800" title="عرض الفاتورة">
                           <DocumentTextIcon className="w-5 h-5" />
                         </Link>
