@@ -384,7 +384,7 @@ export default function PurchaseForm({ purchaseId = null }: PurchaseFormProps) {
       product,
       quantity: 1,
       unitPrice: Number(product.cost_price) || 0,
-      sellingPrice: Number(product.unit_price) || 0,
+      sellingPrice: Number(product.cost_price) || 0,
     });
     setShowProductSearch(false);
     setBarcodeInput('');
@@ -624,7 +624,7 @@ export default function PurchaseForm({ purchaseId = null }: PurchaseFormProps) {
                       quickPriceRef.current?.focus();
                       quickPriceRef.current?.select();
                     } else if (e.key === 'Escape') {
-                      setQuickEntryModal({ show: false, product: null, quantity: 1, unitPrice: 0 });
+                      setQuickEntryModal({ show: false, product: null, quantity: 1, unitPrice: 0, sellingPrice: 0 });
                       barcodeInputRef.current?.focus();
                     }
                   }}
